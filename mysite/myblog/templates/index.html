@@ -10,38 +10,44 @@
 </head>
 <body>
     <div id="home">
-        <h1>
-            我的博客
-        </h1>
-        <img src="/static/img/admin2.jpg" alt="">
-        <hr>
-        <p v-if='movies.length==0'>尚未获取</p>
-        <div id="imagelist">
-            <img v-for="img in movies" v-bind:src="apiurl + img.pic" alt="">
+        <div class="header">
+            <h1>
+                {{siteinfo.title}}
+            </h1>
+            <img src="/upload/{{siteinfo.logo}}" alt="">
         </div>
-        <button v-on:click="getData()">获取视频</button>
+        <hr>
+        <div class="content">
+            <div class="menu">
+                {% for class in classes %}
+                <div class="item">
+                    <a href="/class">{{class.text}}</a>
+                </div>
+                {% endfor %}
+            </div>
+        <div class="userlist">
+            全部用户
+            <hr>
+            {% if userlist %}
+            {% for user in userlist %}
+            <div class="user">
+                <img src="/static/img/admin2.jpg" alt="">
+                <p>{{user.nickname}}</p>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>没有用户</p>
+            {% endif %}
+        </div>
+        </div>
+        <hr>
+        <div class="foot">
+            Copyright © 2020 Li Junchao
+        </div>
     </div>
 
     <script>
-        new Vue({
-            el:'#home',
-            data:{
-                apiurl:'https://api.dweb.club/',
-                movies:[]
-            },
-            methods:{
-                getData() {
-                    var self = this
-                    axios({
-                        methods:'get',
-                        type:'json',
-                        url:'https://api.dweb.club/dweb-api/get-index-data'
-                    }).then(function (res) {
-                        self.movies = res.data.newsdata
-                    })
-                }
-            },
-        })
+        
     </script>
 </body>
 </html>
