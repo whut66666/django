@@ -17,3 +17,20 @@ def index(request):
         "userlist":userlist
     }
     return render(request,'index.html',data)
+
+def classes(request):
+    # 站点的基本信息
+    siteinfo = SiteInfo.objects.all()[0]
+    # 菜单分类
+    classes = Classes.objects.all()
+    # 用交互获取id
+    choose_id = request.GET['id']
+    # 属于该课程的用户
+    choosed = Classes.objects.get(id=choose_id)
+    userlist = Userinfo.objects.filter(belong=choosed)
+    data = {
+        "siteinfo":siteinfo,
+        "classes":classes,
+        "userlist":userlist
+    }
+    return render(request,'classes.html',data)
