@@ -19,25 +19,24 @@
         <hr>
         <div class="content">
             <div class="menu">
-                {% for class in classes %}
-                <div class="item">
-                    <a href="/classes/?id={{class.id}}">{{class.text}}</a>
+                <div v-if="item.id==choosed" v-for="item in classes" class="item" style="background:#777;
+                color:#fff">
+                    <a>[[item.text]]</a>
                 </div>
-                {% endfor %}
+                <div v-else @click="chooseclass(item.id)" class="item">
+                    <a>[[item.text]]</a>
+                </div>
             </div>
-        <div class="userlist">
-            全部用户
+        <div v-if="item.id==choosed" v-for="item in classes" class="userlist">
+            <p>[[item.text]]</p>
             <hr>
-            {% if userlist %}
-            {% for user in userlist %}
-            <div class="user">
+            <div v-if="item.userlist.length>0" v-for="user in item.userlist" class="user">
                 <img src="/static/img/admin2.jpg" alt="">
-                <p>{{user.nickname}}</p>
+                <p>[[user.nickName]]</p>
             </div>
-            {% endfor %}
-            {% else %}
-            <p>没有用户</p>
-            {% endif %}
+            
+            <p v-else>没有用户</p>
+
         </div>
         </div>
         <hr>
@@ -47,7 +46,33 @@
     </div>
 
     <script>
-        
+        new Vue({
+            delimiters:['[[',']]'],
+            el:'#home',
+            data:{
+                choosed:1,
+                classes:[]
+            },
+            mounted(){
+                this.getData()
+            },
+            methods:{
+                getData(){
+                    axios({
+                        url:'/api/',
+                        type:'json',
+                        method:'get',
+                    }).then((res)=>{
+                        this.classes = res.data.classes
+                        console.log(res.data)
+                        console.log(this.classes)
+                    })
+                },
+                chooseclass(id){
+                    this.choosed=id;
+                }
+            }
+        })
     </script>
 </body>
 </html>

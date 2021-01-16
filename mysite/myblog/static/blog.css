@@ -33,7 +33,6 @@
 #home .content .userlist {
     min-width: 700px;
     min-height: 200px;
-    padding-top: 20px;
     height: auto;
     border: 1px solid #000;
     float: left;

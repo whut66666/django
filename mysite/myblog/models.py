@@ -17,9 +17,9 @@ class Classes(models.Model):
 
 # 用户
 class Userinfo(models.Model):
-    nickname = models.CharField(null=True,blank=True,max_length=50)  
+    nickName = models.CharField(null=True,blank=True,max_length=50)  
     headImg = models.ImageField(upload_to='userinfo/',null=True,blank=True)
     # CASCADE表示删除课程时也删除所有所属同学，SET——NULL设置为空
     belong = models.ForeignKey(Classes,on_delete=models.SET_NULL,related_name="userinfo_classes",null=True,blank=True)
     def __str__(self):
-        return self.nickname
+        return self.nickName

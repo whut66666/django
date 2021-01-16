@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+from django.http import HttpRequest,JsonResponse
 from myblog.models import SiteInfo,Classes,Userinfo
 
 # Create your views here.
@@ -23,11 +24,24 @@ def classes(request):
     siteinfo = SiteInfo.objects.all()[0]
     # 菜单分类
     classes = Classes.objects.all()
-    # 用交互获取id
-    choose_id = request.GET['id']
-    # 属于该课程的用户
-    choosed = Classes.objects.get(id=choose_id)
-    userlist = Userinfo.objects.filter(belong=choosed)
+    try:
+        # 用交互获取id
+        choose_id = request.GET['id']
+        # 属于该课程的用户
+        choosed = Classes.objects.filter(id=choose_id)
+    except:
+        return redirect('/')
+
+    if choosed:
+        userlist = Userinfo.objects.filter(belong=choosed[0])
+    else:
+        # data = {
+        #     "value":"无结果"
+        # }
+        # return JsonResponse(data)
+        # return HttpRequest('无结果')
+        # return redirect('/')
+        userlist = []
     data = {
         "siteinfo":siteinfo,
         "classes":classes,
