@@ -34,3 +34,48 @@ def api_test(request):
             data_item['userlist'].append(user_data)
         data['classes'].append(data_item)
     return Response(data)
+
+@api_view(['GET'])
+def getMenuList(resquest):
+    allClasses = Classes.objects.all()
+
+    # 整理数据到json
+    data = []
+    for c in allClasses:
+        # 设计单条数据的结构
+        data_item = {
+            'id':c.id,
+            'text':c.text
+        }
+        data.append(data_item)
+    return Response(data)
+
+@api_view(['GET'])
+def getUserList(resquest):
+    # 从前端发送来的data数据用GET来进行选择
+    menuId = resquest.GET['id']
+    print(menuId)
+    menu = Classes.objects.get(id=menuId)
+    print(menu)
+    userlist = Userinfo.objects.filter(belong=menu)
+    print(userlist)
+
+    # 开始整理数据列表
+    data = []
+    for user in userlist:
+        data_item = {
+            'id':user.id,
+            'headImg':str(user.headImg),
+            'nickName':user.nickName
+        }
+        data.append(data_item)
+    return Response(data)
+
+
+@api_view(['POST'])
+def toLogin(resquest):
+    # username = resquest.POST['username']
+    # password = resquest.POST['password']
+    # print(username,password)
+    print(resquest.POST)
+    return Response('ok')

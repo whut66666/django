@@ -10,7 +10,8 @@
 </head>
 <body>
     <div id="home">
-        <div class="header">
+        <div v-show='onOff'>
+            <div class="header">
             <h1>
                 {{siteinfo.title}}
             </h1>
@@ -40,8 +41,12 @@
         </div>
         </div>
         <hr>
+        </div>
+        <input v-model="inputtext" type="text" name="" id="" style="height: 30px;width: 700px;">
+        <p>[[inputtext]]</p>
         <div class="foot">
             Copyright © 2020 Li Junchao
+            <button @click="onOffClick">开关</button>
         </div>
     </div>
 
@@ -50,13 +55,18 @@
             delimiters:['[[',']]'],
             el:'#home',
             data:{
+                inputtext:"",
                 choosed:1,
-                classes:[]
+                classes:[],
+                onOff:true
             },
             mounted(){
                 this.getData()
             },
             methods:{
+                onOffClick(){
+                    this.onOff=!this.onOff
+                },
                 getData(){
                     axios({
                         url:'/api/',
