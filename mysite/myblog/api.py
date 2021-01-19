@@ -1,5 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from myblog.models import Classes,Userinfo
 from myblog.toJson import Classes_data,Userinfo_data
 import json
@@ -74,8 +76,18 @@ def getUserList(resquest):
 
 @api_view(['POST'])
 def toLogin(resquest):
-    # username = resquest.POST['username']
-    # password = resquest.POST['password']
-    # print(username,password)
-    print(resquest.POST)
-    return Response('ok')
+    username = resquest.POST['username']
+    password = resquest.POST['password']
+    print(username,password)
+    # print(resquest.POST)
+    # 查询用户数据库
+    user = User.objects.filter(username=username)
+    if len(user)>0:
+        auth_user = authenticate(username=username,password=password)
+        print(auth_user)
+        if auth_user:
+            return Response('ok')
+        else:
+            return Response('pwderr')
+    else:
+        return Response('nouser')
