@@ -1,6 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+
+from django.contrib.auth.hashers import check_password,make_password
+
 from django.contrib.auth import authenticate
 from myblog.models import Classes,Userinfo
 from myblog.toJson import Classes_data,Userinfo_data
@@ -84,10 +88,33 @@ def toLogin(resquest):
     user = User.objects.filter(username=username)
     if len(user)>0:
         auth_user = authenticate(username=username,password=password)
-        print(auth_user)
         if auth_user:
-            return Response('ok')
+            token = Token.objects.update_or_create(user=user[0])
+            token = Token.objects.get(user=user[0])
+            print(token.key)
+            data={
+                'token':token.key
+            }
+            return Response(data)
         else:
             return Response('pwderr')
     else:
         return Response('nouser')
+
+@api_view(['GET','POST'])
+def toRegister(resquest):
+    username = resquest.POST['username']
+    password = resquest.POST['password']
+    password2 = resquest.POST['password2']
+    print(username,password,password2)
+    # 判断用户是否存在
+    user = User.objects.filter(username=username)
+    if user:
+        return Response('same')
+    else:
+        # 函数对密码加密
+        newPwd = make_password(password,username)
+        newUser = User(username=username,password=newPwd)
+        newUser.save()
+        return Response('success')
+    return Response('ok')
