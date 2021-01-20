@@ -30,19 +30,31 @@ export default {
     methods:{
         toLogin(){
             console.log(this.username,this.password);
-            axios({
+            if(this.username.length>0 && this.password.length>0){
+                axios({
                 url:'http://127.0.0.1:9000/login/',
                 data:Qs.stringify({
                     username:this.username,
                     password:this.password
                 }),
                 method:'post',
-                // headers:{
-                //     "Content-Type":"application/x-www-form-urlencoded"
-                // }
             }).then((res)=>{
-                console.log(res);
+                switch (res.data) {
+                    case 'nouser':
+                        alert('没有该用户名');
+                        break;
+                    case 'ok':
+                        alert('登陆成功');
+                        break;
+                    case 'pwderr':
+                        alert('密码错误');
+                        break;
+                }
             })
+            }
+            else{
+                alert('用户名和密码不能为空！')
+            }
         }
     }
 };
