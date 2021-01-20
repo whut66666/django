@@ -1,8 +1,9 @@
 <template>
   <div id="home">
     <div>
-      <button>登录</button>
-      <button>注册</button>
+      <button @click="tologin(1)">登录</button>
+      <button @click="tologin(2)">注册</button>
+      <button @click="tologin(3)">修改</button>
       <div class="header">
         <h1>我的博客</h1>
         <img src="./assets/img/admin.jpg" alt="" />
@@ -34,7 +35,7 @@
       </div>
       <hr />
     </div>
-    <LoginBox></LoginBox>
+    <LoginBox v-if="boxtarget" :target="boxtarget" @hidelogin="hidelogin"></LoginBox>
     <div class="foot">Copyright © 2020 Li Junchao</div>
   </div>
 </template>
@@ -50,7 +51,8 @@ export default {
     return {
       menuList: [],
       choosed: 1,
-      choosed_text:'Django'
+      choosed_text:'Django后端',
+      boxtarget:0
     };
   },
   mounted() {
@@ -78,6 +80,14 @@ export default {
       // 进行路由传参跳转
       this.$router.push({path:'/',query:{menuId:id}})
     },
+    // 用来展示登录框
+    tologin(value) {
+      this.boxtarget = value;
+    },
+    // 用来隐藏登录组件
+    hidelogin(){
+      this.boxtarget = 0;
+    }
   },
 };
 </script>
