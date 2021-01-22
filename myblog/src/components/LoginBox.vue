@@ -2,27 +2,40 @@
   <div id="login" @click.self="hideSelf">
     <div id="loginbox">
       <div class="form">
-        <div v-if="target==1 || target==2" class="item">
+        <div v-if="target == 1 || target == 2" class="item">
           <div class="span">用户名:</div>
           <input v-model="username" type="text" placeholder="输入用户名" />
         </div>
-        <div v-if="target==1 || target==2" class="item">
-          <div  class="span">密码:</div>
+        <div v-if="target == 1 || target == 2" class="item">
+          <div class="span">密码:</div>
           <input v-model="password" type="password" placeholder="输入密码" />
         </div>
         <div v-if="target == 2" class="item">
           <div class="span">重复密码:</div>
-          <input v-model="password2" type="password" placeholder="再次输入密码"/>
+          <input
+            v-model="password2"
+            type="password"
+            placeholder="再次输入密码"
+          />
         </div>
 
-        <div v-if="target==3" class="item">
+        <div v-if="target == 3" class="item">
           <div class="span">网站名称:</div>
           <input v-model="sitename" type="text" placeholder="输入网站名称" />
         </div>
 
-        <div v-if="target==3" class="item">
+        <div v-if="target == 3" class="item">
           <div class="span">图片上传:</div>
-          <input id="uploadLogo" type="file"  style="width:70px" />
+          <input
+            id="uploadLogo"
+            @change="uploadImg($event)"
+            type="file"
+            style="width: 70px"
+          />
+        </div>
+
+        <div v-if="target == 3" class="item">
+          <img :src="testlogo" alt="" />
         </div>
 
         <button v-if="target == 1" @click="toLogin">登录</button>
@@ -44,7 +57,8 @@ export default {
       username: "",
       password: "",
       password2: "",
-      sitename:""
+      sitename: "",
+      testlogo: "",
     };
   },
   mounted() {
@@ -76,14 +90,14 @@ export default {
           }).then((res) => {
             console.log(res);
             switch (res.data) {
-                case 'same':
-                    alert('该用户名已存在')
-                    break;
+              case "same":
+                alert("该用户名已存在");
+                break;
             }
           });
         }
-      }else{
-          alert('缺少必填项')
+      } else {
+        alert("缺少必填项");
       }
     },
     // 登录
@@ -108,16 +122,50 @@ export default {
               break;
             default:
               console.log(res.data.token);
+              window.localStorage.setItem('token',res.data.token)
               alert("登陆成功");
+              window.location.reload()
           }
         });
       } else {
         alert("用户名和密码不能为空！");
       }
     },
-    toLoad(){
-        
-    }
+    toLoad() {
+      var sitename = this.sitename;
+      var logo = this.testlogo;
+      console.log(sitename);
+      if (this.sitename.length > 0 && this.testlogo.length > 0) {
+        axios({
+          url: "http://127.0.0.1:9000/upload-logo/",
+          method: "put",
+          data: Qs.stringify({
+            sitename,
+            logo,
+          }),
+        }).then((res)=>{
+          if(res.data == 'ok'){
+            window.location.reload()
+          }
+        })
+      }
+    },
+    uploadImg(e) {
+      var logo = e.target.files[0];
+      console.log(logo);
+      var Img = new FormData();
+      Img.append("logo", logo);
+      axios({
+        url: "http://127.0.0.1:9000/upload-logo/",
+        method: "post",
+        data: Img,
+      }).then((res) => {
+        console.log(res);
+        if (res.data) {
+          this.testlogo = "http://127.0.0.1:9000/upload/" + res.data.img;
+        }
+      });
+    },
   },
 };
 </script>
