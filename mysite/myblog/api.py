@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password,make_password
 
 from django.contrib.auth import authenticate
-from myblog.models import Classes,Userinfo
+from myblog.models import Classes,Userinfo,SiteInfo
 from myblog.toJson import Classes_data,Userinfo_data
 import json
 
@@ -42,24 +42,37 @@ def api_test(request):
     return Response(data)
 
 @api_view(['GET'])
-def getMenuList(resquest):
+def getMenuList(request):
     allClasses = Classes.objects.all()
-
+    siteinfo = SiteInfo.objects.get(id=1)
+    siteinfo_data = {
+        'sitename':siteinfo.title,
+        'logo':'http://127.0.0.1:9000/upload/'+str(siteinfo.logo)
+    }
     # 整理数据到json
-    data = []
+    menu_data = []
     for c in allClasses:
         # 设计单条数据的结构
         data_item = {
             'id':c.id,
             'text':c.text
         }
-        data.append(data_item)
+        menu_data.append(data_item)
+
+    data = {
+        'menu_data':menu_data,
+        'siteinfo':siteinfo_data
+    }
     return Response(data)
 
-@api_view(['GET'])
-def getUserList(resquest):
+@api_view(['GET','DELETE'])
+def getUserList(request):
+    if request.method == 'DELETE':
+        user_id = request.POST['id']
+        print(id)
+        return Response('ok')
     # 从前端发送来的data数据用GET来进行选择
-    menuId = resquest.GET['id']
+    menuId = request.GET['id']
     print(menuId)
     menu = Classes.objects.get(id=menuId)
     print(menu)
@@ -79,11 +92,11 @@ def getUserList(resquest):
 
 
 @api_view(['POST'])
-def toLogin(resquest):
-    username = resquest.POST['username']
-    password = resquest.POST['password']
+def toLogin(request):
+    username = request.POST['username']
+    password = request.POST['password']
     print(username,password)
-    # print(resquest.POST)
+    # print(request.POST)
     # 查询用户数据库
     user = User.objects.filter(username=username)
     if len(user)>0:
@@ -102,10 +115,10 @@ def toLogin(resquest):
         return Response('nouser')
 
 @api_view(['GET','POST'])
-def toRegister(resquest):
-    username = resquest.POST['username']
-    password = resquest.POST['password']
-    password2 = resquest.POST['password2']
+def toRegister(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    password2 = request.POST['password2']
     print(username,password,password2)
     # 判断用户是否存在
     user = User.objects.filter(username=username)
@@ -118,3 +131,25 @@ def toRegister(resquest):
         newUser.save()
         return Response('success')
     return Response('ok')
+
+@api_view(['POST','PUT'])
+def uploadLogo(request):
+    if request.method == "PUT":
+        sitename = request.POST['sitename']
+        print(sitename)
+        old_info = SiteInfo.objects.get(id=1)
+        old_info.title = sitename
+        new_info = SiteInfo.objects.get(id=3)
+        old_info.logo = new_info.logo
+        old_info.save()
+        return Response('ok')
+    print(request)
+    img = request.FILES['logo']
+    print(img)
+    test_sitelogo = SiteInfo.objects.get(id=3)
+    test_sitelogo.logo = img
+    test_sitelogo.save()
+    data = {
+        'img':str(test_sitelogo.logo)
+    }
+    return Response(data)
