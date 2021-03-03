@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class SiteInfo(models.Model):
@@ -21,5 +22,6 @@ class Userinfo(models.Model):
     headImg = models.ImageField(upload_to='userinfo/',null=True,blank=True)
     # CASCADE表示删除课程时也删除所有所属同学，SET——NULL设置为空
     belong = models.ForeignKey(Classes,on_delete=models.SET_NULL,related_name="userinfo_classes",null=True,blank=True)
+    belong_user = models.OneToOneField(User,on_delete=models.CASCADE,null=True)
     def __str__(self):
         return self.nickName

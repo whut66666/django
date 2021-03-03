@@ -65,11 +65,13 @@ def getMenuList(request):
     }
     return Response(data)
 
-@api_view(['GET','DELETE'])
+@api_view(['GET','POST'])
 def getUserList(request):
-    if request.method == 'DELETE':
+    if request.method == 'POST':
         user_id = request.POST['id']
-        print(id)
+        print(user_id)
+        deleteUser = Userinfo.objects.get(id=user_id)
+        deleteUser.delete()
         return Response('ok')
     # 从前端发送来的data数据用GET来进行选择
     menuId = request.GET['id']
@@ -105,8 +107,16 @@ def toLogin(request):
             token = Token.objects.update_or_create(user=user[0])
             token = Token.objects.get(user=user[0])
             print(token.key)
+
+            # 获取用户
+            userinfo = Userinfo.objects.get(belong_user=user[0])
             data={
-                'token':token.key
+                'token':token.key,
+                'userinfo':{
+                    'id':userinfo.id,
+                    'nickName':userinfo.nickName,
+                    'headImg':str(userinfo.headImg)
+                }
             }
             return Response(data)
         else:
