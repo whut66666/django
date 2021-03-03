@@ -3,7 +3,7 @@
     <div v-for="user in imglist" :key="user.id" class="user">
       <img :src="apiurl+user.headImg" alt />
       <p>{{user.nickName}}</p>
-      <button @click="deleteUser()">删除</button>
+      <button @click="deleteUser(user.id)">删除</button>
     </div>
   </div>
 </template>
@@ -29,22 +29,6 @@ export default {
     }
   },
   methods:{
-    // 删除用户
-    deleteUser() {
-      axios({
-        url:'http://127.0.0.1:9000/get-user-list/',
-        type:'json',
-        data: Qs.stringify({
-          id:this.menuId
-        }),
-        method:'delete',
-        headers: {
-          "Content_Type": "text/plain;charset=UTF-8"
-        },
-      }).then((res)=>{
-        console.log(res);
-      })
-    },
     // 从这里开始进行后端的请求
     getUserList(id){
       console.log('开始获取分类用户列表'+id);
@@ -57,9 +41,31 @@ export default {
         },
         method:'get'
       }).then((res)=>{
+        console.log(res.data);
         this.imglist = res.data
       })
-    }
+    },
+    // 删除用户
+    deleteUser(id) {
+      console.log(id);
+      axios({
+        url:'http://127.0.0.1:9000/get-user-list/',
+        type:'json',
+        data: Qs.stringify({
+          id
+        }),
+        // method:'delete',
+        method:'post',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+      }).then((res)=>{
+        console.log(res);
+        if(res.data=='ok'){
+          this.getUserList(this.menuId)
+        }
+      })
+    },
   }
 };
 </script>

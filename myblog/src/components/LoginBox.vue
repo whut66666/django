@@ -123,8 +123,21 @@ export default {
             default:
               console.log(res.data.token);
               window.localStorage.setItem('token',res.data.token)
+              // 存储一条一条太过麻烦
+              // window.localStorage.setItem('userinfo',res.data.userinfo)
               alert("登陆成功");
-              window.location.reload()
+
+              // 开始存储vuex中的用户信息
+              var userinfo = res.data.userinfo
+              console.log(userinfo);
+              this.$store.commit('editUserinfo',userinfo)
+
+
+              if(this.$router.path != "/userinfo"){
+                this.$router.push({path:'/userinfo'})
+              }
+              // 不让页面自动刷新
+              // window.location.reload()
           }
         });
       } else {

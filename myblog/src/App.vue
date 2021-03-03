@@ -3,12 +3,14 @@
     <div>
       <button v-if="loginType == false" @click="tologin(1)">登录</button>
       <button v-if="loginType == false" @click="tologin(2)">注册</button>
-      <button v-if="loginType == true">个人中心</button>
+      <button @click="toHome" v-if="loginType">首页</button>
+      <button @click="toUserInfo" v-if="loginType">个人中心（在做中）</button>
       <button v-if="loginType == true" @click="tologin(3)">修改</button>
       <div class="header">
         <h1>{{siteinfo.sitename}}</h1>
         <img :src="siteinfo.logo" alt="" />
       </div>
+      <Test :testName="editName"></Test>
       <hr />
       <div class="content">
         <div class="menu">
@@ -31,7 +33,7 @@
         <div class="userlist">
           <p>{{choosed_text}}</p>
           <hr />
-          <router-view />
+          <router-view @editName="edittestName" @hideBox="hidelogin" @changeUI="changeLoginTye" />
         </div>
       </div>
       <hr />
@@ -44,9 +46,11 @@
 <script>
 import axios from "axios";
 import LoginBox from "../src/components/LoginBox"
+import Test from "../src/components/test"
 export default {
   components:{
-    LoginBox
+    LoginBox,
+    Test
   },
   data() {
     return {
@@ -55,7 +59,9 @@ export default {
       choosed_text:'Django后端',
       boxtarget:0,
       siteinfo:{},
-      loginType:false
+      loginType:false,
+      //test
+      editName:''
     };
   },
   mounted() {
@@ -70,6 +76,16 @@ export default {
     this.getMenuList();
   },
   methods: {
+    edittestName(newName){
+      console.log(newName);
+      this.editName = newName
+    },
+    toHome(){
+      this.$router.push({path:'/'})
+    },
+    toUserInfo(){
+      this.$router.push({path:'userinfo'})
+    },
     getMenuList() {
       console.log("开始获取分类");
       axios({
@@ -99,6 +115,10 @@ export default {
     // 用来隐藏登录组件
     hidelogin(){
       this.boxtarget = 0;
+    },
+    // 修改登录状态
+    changeLoginTye(bool){
+      this.loginType = bool
     }
   },
 };
